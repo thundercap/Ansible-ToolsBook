@@ -1,0 +1,8 @@
+#SPDX-License-Identifier: MIT-0
+# prometheus/handlers/main.yml
+---
+# handlers file for prometheus
+- name: restart prometheus
+  service:
+    name: prometheus
+    state: restarted

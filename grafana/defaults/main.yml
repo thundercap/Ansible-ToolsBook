@@ -1,0 +1,5 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for grafana
+---
+grafana_admin_password: "your_admin_password"

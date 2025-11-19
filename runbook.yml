@@ -1,0 +1,9 @@
+# runbook.yml
+---
+- name: Ansible Playbook for Prometheus Grafana and Nginx Reverse Proxy
+  hosts: monitor
+  become: true
+  roles:
+    - prometheus
+    - grafana
+    - jenkins

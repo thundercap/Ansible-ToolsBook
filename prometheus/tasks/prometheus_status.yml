@@ -1,0 +1,9 @@
+# prometheus/tasks/prometheus_status.yml
+---
+- name: Start prometheus service
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes
+  notify:
+    - restart prometheus
