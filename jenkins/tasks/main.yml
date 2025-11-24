@@ -1,21 +1,39 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for jenkins
-- name: Add Jenkins GPG key
-  apt_key:
-    url: "{{ jenkins_key_url }}"
-    state: present
+- name: Clean up Jenkins repository from sources.list
+  shell: sed -i '/pkg.jenkins.io/d' /etc/apt/sources.list
+
+- name: Clean up Jenkins repository files
+  shell: rm -f /etc/apt/sources.list.d/*jenkins*.list
+
+- name: Create keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download and add Jenkins GPG key
+  shell: |
+    curl -fsSL {{ jenkins_key_url }} | gpg --dearmor -o /etc/apt/keyrings/jenkins-2023.gpg
+  args:
+    creates: /etc/apt/keyrings/jenkins-2023.gpg
 
 - name: Add Jenkins repository
   apt_repository:
-    repo: "deb {{ jenkins_repo_url }} binary/"
+    repo: "deb [signed-by=/etc/apt/keyrings/jenkins-2023.gpg] {{ jenkins_repo_url }} binary/"
     state: present
+    filename: jenkins
 
 - name: Install Java and Jenkins
   apt:
     name: "{{ jenkins_packages }}"
     state: present
     update_cache: yes
+
+- name: Ensure correct Java version is selected
+  shell: update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+  ignore_errors: yes
 
 - name: Start and enable Jenkins service
   service:

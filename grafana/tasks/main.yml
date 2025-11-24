@@ -1,6 +1,12 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for grafana
+- name: Clean up Grafana repository from sources.list
+  shell: sed -i '/packages.grafana.com/d' /etc/apt/sources.list
+
+- name: Clean up Grafana repository files
+  shell: rm -f /etc/apt/sources.list.d/*grafana*.list
+
 - name: Install dependencies
   apt:
     name:
@@ -9,17 +15,23 @@
     state: present
     update_cache: yes
 
-- name: Add Grafana GPG key
-  apt_key:
-    url: "{{ grafana_gpg_key }}"
-    state: present
-    validate_certs: no
+- name: Create keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download and add Grafana GPG key
+  shell: |
+    curl -fsSL {{ grafana_gpg_key }} | gpg --dearmor -o /etc/apt/keyrings/grafana.gpg
+  args:
+    creates: /etc/apt/keyrings/grafana.gpg
 
 - name: Add Grafana repository
   apt_repository:
-    repo: "{{ grafana_repo }}"
+    repo: "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://packages.grafana.com/oss/deb stable main"
     state: present
-    validate_certs: no
+    filename: grafana
 
 - name: Install Grafana
   apt:
@@ -43,16 +55,29 @@
   retries: 120
   delay: 1
 
-- name: Check if admin password is already set
+- name: Check if admin password is already set correctly
   uri:
     url: "http://admin:{{ grafana_admin_password }}@127.0.0.1:{{ grafana_port }}/api/user"
     method: GET
     force_basic_auth: yes
     status_code: 200
-  register: __grafana_auth_check
+  register: __grafana_ready
   ignore_errors: yes
   changed_when: false
 
+- name: Check if default admin password still works
+  uri:
+    url: "http://admin:admin@127.0.0.1:{{ grafana_port }}/api/user"
+    method: GET
+    force_basic_auth: yes
+    status_code: 200
+  register: __grafana_default
+  ignore_errors: yes
+  changed_when: false
+  when: __grafana_ready.status != 200
+
 - name: Change Grafana admin password
   shell: "grafana-cli admin reset-admin-password {{ grafana_admin_password }}"
-  when: __grafana_auth_check.status != 200
+  when: 
+    - __grafana_ready.status != 200
+    - __grafana_default.status == 200

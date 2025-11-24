@@ -1,3 +1,4 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # defaults file for aws-cli
+aws_cli_zip_url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"

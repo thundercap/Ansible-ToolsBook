@@ -1,9 +1,9 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # vars file for jenkins
-java_version: "openjdk-8-jre-headless"
+java_version: "openjdk-17-jre"
 jenkins_repo_url: "https://pkg.jenkins.io/debian-stable/"
-jenkins_key_url: "https://pkg.jenkins.io/debian-stable/jenkins.io.key"
+jenkins_key_url: "https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key"
 jenkins_packages:
   - "{{ java_version }}"
   - jenkins

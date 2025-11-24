@@ -1,21 +1,35 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for docker
+- name: Clean up Docker repository from sources.list
+  shell: sed -i '/download.docker.com/d' /etc/apt/sources.list
+
+- name: Clean up Docker repository files
+  shell: rm -f /etc/apt/sources.list.d/*docker*.list
+
 - name: Install dependencies
   apt:
     name: "{{ docker_dependencies }}"
     state: present
     update_cache: yes
 
-- name: Add Docker GPG key
-  apt_key:
-    url: "{{ docker_gpg_url }}"
-    state: present
+- name: Create keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download and add Docker GPG key
+  shell: |
+    curl -fsSL {{ docker_gpg_url }} | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  args:
+    creates: /etc/apt/keyrings/docker.gpg
 
 - name: Add Docker repository
   apt_repository:
-    repo: "{{ docker_repo }}"
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu bionic stable"
     state: present
+    filename: docker
 
 - name: Install Docker
   apt:
