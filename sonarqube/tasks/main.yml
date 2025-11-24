@@ -1,17 +1,15 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for sonarqube
-tasks:
 - name: Run SonarQube (LTS Community Edition)
-      community.docker.docker_container:
-        name: sonarqube
-        image: sonarqube:lts-community
-        pull: true
-        state: started
-        restart_policy: always
-        ports:
-          - "9000:9000"
-        volumes:
-          - sonarqube_data:/opt/sonarqube/data
-          - sonarqube_extensions:/opt/sonarqube/extensions
-          - sonarqube_logs:/opt/sonarqube/logs
+  community.docker.docker_container:
+    name: sonarqube
+    image: "{{ sonarqube_image }}"
+    pull: true
+    state: started
+    restart_policy: always
+    ports: "{{ sonarqube_ports }}"
+    volumes:
+      - "{{ sonarqube_data_volume }}:/opt/sonarqube/data"
+      - "{{ sonarqube_extensions_volume }}:/opt/sonarqube/extensions"
+      - "{{ sonarqube_logs_volume }}:/opt/sonarqube/logs"

@@ -1,5 +1,8 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # defaults file for prometheus
----
-service: prometheus
+prometheus_version: "2.40.0-rc.0"
+prometheus_url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+prometheus_dir: "/opt/prometheus"
+prometheus_user: "prometheus"
+prometheus_group: "prometheus"

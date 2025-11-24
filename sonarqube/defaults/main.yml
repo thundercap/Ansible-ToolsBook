@@ -1,3 +1,9 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # defaults file for sonarqube
+sonarqube_image: "sonarqube:lts-community"
+sonarqube_ports:
+  - "9000:9000"
+sonarqube_data_volume: "sonarqube_data"
+sonarqube_extensions_volume: "sonarqube_extensions"
+sonarqube_logs_volume: "sonarqube_logs"

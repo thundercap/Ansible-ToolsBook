@@ -1,10 +1,10 @@
 ---
 - name: Set folder permissions for prometheus user
   file:
-    path: /opt/prometheus
+    path: "{{ prometheus_dir }}"
     state: directory
-    owner: "{{ service }}"
-    group: "{{ service }}"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
     recurse: yes
     
 - name: Copy systemd service for prometheus

@@ -1,27 +1,24 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for jenkins
----
-# tasks file for jenkins
-- name: add jenkins key
+- name: Add Jenkins GPG key
   apt_key:
+    url: "{{ jenkins_key_url }}"
     state: present
-    url: "{{ jenkins_key_rpmU }}"
-- name: "Set EPEL yum repository"
+
+- name: Add Jenkins repository
   apt_repository:
-      filename: "{{ item.value.name }}"
-      repo: "{{ item.value.url }}"
-      description: "{{ item.value.description }}"
-  loop:
-      "{{ lookup('dict',reposU) }}"
-- name: "Install Java and Jenkins"
+    repo: "deb {{ jenkins_repo_url }} binary/"
+    state: present
+
+- name: Install Java and Jenkins
   apt:
-      name: "{{ item.value.name }}"
-      state: present
-  loop:
-      "{{ lookup('dict',softwaresU) }}"
-- name: "Starting jenkins"
+    name: "{{ jenkins_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Start and enable Jenkins service
   service:
-      name: "jenkins"
-      state: started
-      enabled: yes
+    name: jenkins
+    state: started
+    enabled: yes

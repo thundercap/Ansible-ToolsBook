@@ -1,6 +1,7 @@
 ---
 - name: Create a dedicated prometheus user
   user:
-    name: "{{ service }}"
+    name: "{{ prometheus_user }}"
     comment: "Prometheus user"
     createhome: false
+    shell: /bin/false

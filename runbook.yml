@@ -1,9 +1,21 @@
-# runbook.yml
 ---
-- name: Ansible Playbook for Prometheus Grafana and Nginx Reverse Proxy
+- name: Common Setup
+  hosts: all
+  become: true
+  roles:
+    - docker
+    - aws-cli
+
+- name: Monitoring Stack
   hosts: monitor
   become: true
   roles:
     - prometheus
     - grafana
+
+- name: CI/CD Stack
+  hosts: ControlNode
+  become: true
+  roles:
     - jenkins
+    - sonarqube

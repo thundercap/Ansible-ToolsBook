@@ -3,7 +3,7 @@
 # tasks file for prometheus
 # prometheus/tasks/main.yml
 ---
-- include: create_user.yml
-- include: install.yml
-- include: configure.yml
-- include: prometheus_status.yml
+- import_tasks: create_user.yml
+- import_tasks: install.yml
+- import_tasks: configure.yml
+- import_tasks: prometheus_status.yml

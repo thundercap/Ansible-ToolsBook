@@ -1,17 +1,19 @@
+```
 ---
-- name: Download prometheus package
-  get_url:
-    url: https://github.com/prometheus/prometheus/releases/download/v2.40.0-rc.0/prometheus-2.40.0-rc.0.linux-amd64.tar.gz
-    dest: /tmp/prometheus.tar.gz
+- name: Create Prometheus directory
+  file:
+    path: "{{ prometheus_dir }}"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: '0755'
 
-- name: Extract prometheus package
+- name: Download and extract Prometheus
   unarchive:
-    src: /tmp/prometheus.tar.gz
-    dest: /opt/
+    src: "{{ prometheus_url }}"
+    dest: "{{ prometheus_dir }}"
     remote_src: yes
-
-- name: Rename existing prometheus directory (if it exists)
-  command: sudo rm -rf /opt/prometheus
-
-- name: Rename prometheus folder
-  command: sudo mv /opt/prometheus-2.40.0-rc.0.linux-amd64 /opt/prometheus
+    extra_opts: [--strip-components=1]
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+```
